@@ -1,14 +1,52 @@
 import React, { useEffect, useState } from 'react'
 import ProjectCard from '../Components/ProjectCard'
 import { Link } from 'react-router-dom'
+import { getallUserProjectAPI, getHomeProjectAPI } from '../services/allAPIs'
 
 function Home() {
+
     //to hold token from session stor
     const [token,setToken] = useState("")
 
     useEffect(()=>{
         setToken(sessionStorage.getItem('token'))
     },[token])
+
+    const [projectDetails,setProjectDetails]=useState([])
+   
+
+    const getHomeProject=async()=>{
+        try{
+
+            const response = await getHomeProjectAPI()
+            console.log(response);
+            if(response.status==200){
+                setProjectDetails(response.data)
+            }
+
+        }       
+        catch(err){
+            console.log(err);
+            
+        }
+    }
+
+    console.log(projectDetails);//array => [ {},{}]
+    
+
+    useEffect(()=>{
+            getHomeProject()
+    },[])
+
+    const checkToken=()=>{
+        console.log("hh");
+        
+        if(!token){
+            alert("Please Login")  
+        }
+    }
+
+
   return (
    
     <>
@@ -37,23 +75,35 @@ function Home() {
         <div className="container my-5 py-5">
             <h1 className='text-center m-5'>Explore Our Projects</h1>
             <div className="row d-flex ">
-                <div className="col-4">
-                    <ProjectCard/>
-                </div>
-                <div className="col-4">
-                <ProjectCard/>
-                </div>
-                <div className="col-4">
-                <ProjectCard/>
-                </div>
+                {
+                    projectDetails.length>0?
+                    projectDetails.map((item)=>(
+                        <div className="col-4">
+                        <ProjectCard project={item}/>
+                    </div>
+                    ))
+                    
+                    :"Cant load projects..."
+                }
+               
+              
             </div>
         </div>
 
         <div className=" text-center">
-            <Link to={'/projects'}>
-            <button className='btn btn-outline-light btn-center m-5 '>View Projects</button>
+            {
+                token ?
+                <Link to={'/projects'}>
+            <button onClick={checkToken}  className='btn btn-outline-light btn-center m-5 '>View Projects</button>
 
             </Link>
+            :
+          
+            <button onClick={checkToken}  className='btn btn-outline-light btn-center m-5 '>View Projects</button>
+
+           
+            }
+            
         </div>
     </>
   )

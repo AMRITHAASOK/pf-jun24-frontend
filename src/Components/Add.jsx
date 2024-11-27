@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import {
   MDBBtn,
   MDBModal,
@@ -10,8 +10,15 @@ import {
   MDBModalFooter,
 } from 'mdb-react-ui-kit';
 import { addProjectAPI } from '../services/allAPIs';
+import projectImage from '../assets/projectImage.jpg'
+
+import {addContextResponse} from '../ContextAPI/ContextShare'
+
 
 function Add() {
+  //context
+  const {addContext,setAddContext} = useContext(addContextResponse)
+
   const [basicModal, setBasicModal] = useState(false);
 
   const toggleOpen = () => setBasicModal(!basicModal);
@@ -37,6 +44,7 @@ function Add() {
         reqBody.append("link",link),
         reqBody.append("description",description),
         reqBody.append("projectImg",projectImg)
+        // reqBody.append("projectImg", projectDetails.projectImg.name.replace(/ /g, "_"));
 
         const token= sessionStorage.getItem("token")
         console.log(token);
@@ -53,6 +61,7 @@ function Add() {
               console.log(response);
               if(response.status==200){
                 alert("Project Added successfully")
+                setAddContext(response.data)//array
                 setProjectDetails({
                   title:"",language:"",github:"",link:"",description:"",projectImg:""
                 })
@@ -96,7 +105,7 @@ function Add() {
                 <div className="col-6 p-5">
                   <label>
                     <input  onChange={e=>setProjectDetails({...projectDetails,projectImg:e.target.files[0]})} type="file" style={{display:'none'}}/>
-                    <img  src={preview?preview:"https://th.bing.com/th/id/OIP.6QnqBNa9u9vYEeM6Qt2anwHaEK?rs=1&pid=ImgDetMain"} width={'100%'} alt="" />
+                    <img  src={preview?preview:"https://th.bing.com/th/id/OIP.6QnqBNa9u9vYEeM6Qt2anwHaEK?rs=1&pid=ImgDetMain"} width={'100%'} alt="preview" />
                   </label>
                 </div>
                 <div className="col-6">
